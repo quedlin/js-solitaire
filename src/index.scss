@@ -144,6 +144,14 @@ body {
         .card:first-child + .card:last-child {
             left: 10px;
         }
+
+        &--single {
+            .card:last-child,
+            .card:nth-last-child(2),
+            .card:first-child + .card:last-child {
+                left: 0;
+            }
+        }
     }
 }
 

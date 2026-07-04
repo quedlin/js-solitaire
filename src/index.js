@@ -10,6 +10,7 @@ const resetEl = document.getElementById('js-reset');
 
 const cardWidth = 71;
 const cardHeight = 96;
+let dealCount = 1;
 const state = {
     // clubs (♣), diamonds (♦), hearts (♥) and spades (♠)
     types: ['c', 'd', 'h', 's'],
@@ -306,7 +307,7 @@ const handleClick = index => event => {
         const { location, pile } = getCardLocation(index);
         if (location === 'deal' && pile === 'pile') {
             const max = state.deal.pile.cards.length - 1;
-            const min = Math.max(-1, max - 3);
+            const min = Math.max(-1, max - dealCount);
 
             for (let i = max; i > min; i--) {
                 const card = state.deal.pile.cards[i];
@@ -665,6 +666,8 @@ function initSolitaire() {
     const styles = `.card--front { background-image: url("spritesheet.png"); } .card--back { background-image: url("spritesheet.png"); background-size: auto; background-repeat: no-repeat; background-color: transparent; background-position: -72px -385px; }`;
     css.appendChild(document.createTextNode(styles));
     document.head.appendChild(css);
+
+    dealEl.classList.toggle('deck__deal--single', dealCount === 1);
 
     // create all cards
     for (let i = 0; i < 4; i++) {
