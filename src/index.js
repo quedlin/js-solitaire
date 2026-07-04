@@ -7,10 +7,12 @@ const finishContainerEl = document.getElementById('js-finish');
 const deskContainerEl = document.getElementById('js-board');
 const deckPileEl = document.getElementById('js-deck-pile');
 const resetEl = document.getElementById('js-reset');
+const cycleBackEl = document.getElementById('js-cycle-back');
 
 const cardWidth = 71;
 const cardHeight = 96;
 let dealCount = 1;
+let cardBackIndex = 0;
 const state = {
     // clubs (♣), diamonds (♦), hearts (♥) and spades (♠)
     types: ['c', 'd', 'h', 's'],
@@ -663,9 +665,18 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
 function initSolitaire() {
     // add sprite
     const css = document.createElement('style');
-    const styles = `.card--front { background-image: url("spritesheet.png"); } .card--back { background-image: url("spritesheet.png"); background-size: auto; background-repeat: no-repeat; background-color: transparent; background-position: -72px -385px; }`;
-    css.appendChild(document.createTextNode(styles));
     document.head.appendChild(css);
+
+    const updateCardBack = () => {
+        const backX = -((cardBackIndex + 1) * cardWidth + 1);
+        css.textContent = `.card--front { background-image: url("spritesheet.png"); } .card--back { background-image: url("spritesheet.png"); background-size: auto; background-repeat: no-repeat; background-color: transparent; background-position: ${backX}px -385px; }`;
+    };
+    updateCardBack();
+
+    cycleBackEl.onclick = () => {
+        cardBackIndex = (cardBackIndex + 1) % 12;
+        updateCardBack();
+    };
 
     dealEl.classList.toggle('deck__deal--single', dealCount === 1);
 
