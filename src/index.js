@@ -1,4 +1,3 @@
-import spriteImg from './sprite';
 import './index.scss';
 
 const gameEl = document.getElementById('js-solitaire');
@@ -555,7 +554,7 @@ window.win = () => {
 
 const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
     const image = document.createElement('img');
-    image.src = spriteImg;
+    image.src = 'spritesheet.png';
     const canvas = document.createElement('canvas');
     canvas.style.position = 'absolute';
     canvas.width = canvasWidth;
@@ -582,8 +581,8 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
 
     const Particle = function (id, x, y, sx, sy) {
         if (sx === 0) sx = 2;
-        const spriteX = ( id % 4 ) * cardWidth;
-        const spriteY = Math.floor(id / 4) * cardHeight;
+        const spriteX = ( id % 13 ) * cardWidth;
+        const spriteY = Math.floor(id / 13) * cardHeight;
 
         // initial position of the card
         drawCard(x, y, spriteX, spriteY);
@@ -663,7 +662,7 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
 function initSolitaire() {
     // add sprite
     const css = document.createElement('style');
-    const styles = `.card--front { background-image: url("${spriteImg}"); }`;
+    const styles = `.card--front { background-image: url("spritesheet.png"); } .card--back { background-image: url("spritesheet.png"); background-size: auto; background-repeat: no-repeat; background-color: transparent; background-position: -72px -385px; }`;
     css.appendChild(document.createTextNode(styles));
     document.head.appendChild(css);
 
