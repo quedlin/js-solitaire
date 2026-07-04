@@ -13,7 +13,7 @@ const PORT = 3000;
 const HOST = 'localhost';
 
 const serverConfig = {
-    clientLogLevel: 'none',
+    logLevel: 'silent',
     contentBase: paths.build,
     compress: true,
     port: PORT

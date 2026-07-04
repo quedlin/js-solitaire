@@ -1,6 +1,5 @@
 const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
-const UglifyPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const paths = require('./paths');
 const env = process.env.NODE_ENV;
@@ -11,48 +10,36 @@ const config = env === 'development'
 const { inject } = config;
 
 const plugins = [
-    new CopyWebpackPlugin([{
-        from: '**/*',
-        transform: (content, path) => {
-            let changed = content.toString();
-            for (const key in inject) {
-                changed = changed.replace(`%${key}%`, inject[key]);
+    new CopyWebpackPlugin({
+        patterns: [
+            {
+                from: '**/*',
+                globOptions: {
+                    ignore: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.js', '**/*.ico', '**/*.scss']
+                },
+                transform: (content) => {
+                    let changed = content.toString();
+                    for (const key in inject) {
+                        changed = changed.replace(`%${key}%`, inject[key]);
+                    }
+                    return changed;
+                }
+            },
+            {
+                from: '**/*.{png,jpg,jpeg,gif,ico}'
             }
-            return changed;
-        }
-    }], {
-        ignore: ['*.png', '*.jpg', '*.jpeg', '*.gif', '*.js', '*.ico', '*.scss']
-    }),
-    new CopyWebpackPlugin([{
-        from: '**/*.{png,jpg,jpeg,gif,ico}',
-    }])
+        ]
+    })
 ];
 
-if (env === 'production') {
-    plugins.push(
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        }),
-        new UglifyPlugin({
-            output: {
-                comments: false
-            }
-        })
-    );
-} else {
-    plugins.push(
-        new webpack.NamedModulesPlugin()
-    );
-}
-
 module.exports = {
+    mode: env,
     context: paths.src,
     devtool: 'cheap-module-source-map',
     entry: paths.index,
     output: {
-        path: paths.build
+        path: paths.build,
+        filename: 'main.js'
     },
     module: {
         strictExportPresence: true,
@@ -78,7 +65,6 @@ module.exports = {
             test: /\.js$/,
             include: paths.src,
             loader: require.resolve('babel-loader'),
-
             options: {
                 presets: [['env', {
                     targets: {
@@ -95,48 +81,44 @@ module.exports = {
                     loader: require.resolve('css-loader'),
                     options: {
                         modules: false,
-                        sourceMap: false,
-                        localIdentName: env === 'development' ? '[local]' : '[hash:base64:5]'
+                        sourceMap: false
                     }
                 },
                 {
                     loader: require.resolve('postcss-loader'),
                     options: {
-                        // Necessary for external CSS imports to work
-                        // https://github.com/facebookincubator/create-react-app/issues/2677
-                        ident: 'postcss',
-                        plugins: () => [
-                            require('cssnano'),
-                            require('postcss-flexbugs-fixes'),
-                            autoprefixer({
-                                browsers: [
-                                    '>1%',
-                                    'last 4 versions',
-                                    'Firefox ESR',
-                                    'not ie < 9' // React doesn't support IE8 anyway
-                                ],
-                                flexbox: 'no-2009'
-                            })
-                        ]
+                        postcssOptions: {
+                            plugins: [
+                                require('cssnano'),
+                                require('postcss-flexbugs-fixes'),
+                                autoprefixer({
+                                    overrideBrowserslist: [
+                                        '>1%',
+                                        'last 4 versions',
+                                        'Firefox ESR',
+                                        'not ie < 9'
+                                    ],
+                                    flexbox: 'no-2009'
+                                })
+                            ]
+                        }
                     }
                 }, {
                     loader: require.resolve('sass-loader'),
+                    options: {
+                        implementation: require('sass')
+                    }
                 }
             ]
         }]
     },
     plugins: plugins,
-    // Some libraries import Node modules but don't use them in the browser.
-    // Tell Webpack to provide empty mocks for them so importing them works.
     node: {
         dgram: 'empty',
         fs: 'empty',
         net: 'empty',
         tls: 'empty'
     },
-    // Turn off performance hints during development because we don't do any
-    // splitting or minification in interest of speed. These warnings become
-    // cumbersome.
     performance: {
         hints: false
     }

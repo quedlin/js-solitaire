@@ -9,12 +9,9 @@ const webpack = require('webpack');
 
 const compiler = webpack(config);
 compiler.run((err, stats) => {
-    if (err) {
-        console.log('Error while building application', err);
+    if (err || stats.hasErrors()) {
+        console.log('Error while building application', err || stats.toString());
     } else {
-        if (stats.compilation.errors) {
-            console.log(stats.compilation.errors);
-        }
         console.log('Application successfully built');
     }
 });
