@@ -13,23 +13,25 @@ const PORT = 3000;
 const HOST = 'localhost';
 
 const serverConfig = {
-    logLevel: 'silent',
-    contentBase: paths.build,
+    static: { directory: paths.build },
     compress: true,
-    port: PORT
+    port: PORT,
+    host: HOST,
+    client: { logging: 'none' }
 };
 
 const compiler = webpack(config);
-const devServer = new WebpackDevServer(compiler, serverConfig);
+const devServer = new WebpackDevServer(serverConfig, compiler);
 
-devServer.listen(PORT, HOST, err => {
+devServer.startCallback(err => {
     if (err) return console.log(err);
     console.log(`Starting the development server on ${HOST}:${PORT}...`);
 });
 
 ['SIGINT', 'SIGTERM'].forEach(sig => {
     process.on(sig, () => {
-        devServer.close();
-        process.exit();
+        devServer.stopCallback(() => {
+            process.exit();
+        });
     });
 });

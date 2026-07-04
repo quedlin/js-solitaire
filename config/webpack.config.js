@@ -81,7 +81,10 @@ module.exports = {
                     loader: require.resolve('css-loader'),
                     options: {
                         modules: false,
-                        sourceMap: false
+                        sourceMap: false,
+                        url: {
+                            filter: (url) => !url.startsWith('data:')
+                        }
                     }
                 },
                 {
@@ -106,19 +109,14 @@ module.exports = {
                 }, {
                     loader: require.resolve('sass-loader'),
                     options: {
-                        implementation: require('sass')
+                        implementation: require('sass'),
+                        api: 'modern'
                     }
                 }
             ]
         }]
     },
     plugins: plugins,
-    node: {
-        dgram: 'empty',
-        fs: 'empty',
-        net: 'empty',
-        tls: 'empty'
-    },
     performance: {
         hints: false
     }
