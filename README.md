@@ -8,3 +8,4 @@ DEV env: `yarn && yarn start`
 
 Production build: `yarn build`
 
+![JavaScript Solitaire](screenshot.png)
