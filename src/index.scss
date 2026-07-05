@@ -230,6 +230,21 @@ body {
     }
 }
 
+.cycle-back {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    outline: 0;
+    padding-left: 10px;
+
+    &:active {
+        background-color: #999;
+    }
+}
+
 .finish-dest {
     box-shadow: 0 0 0 1px #03ffff;
 }
