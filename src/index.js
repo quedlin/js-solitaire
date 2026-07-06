@@ -8,6 +8,7 @@ const deskContainerEl = document.getElementById('js-board');
 const deckPileEl = document.getElementById('js-deck-pile');
 const resetEl = document.getElementById('js-reset');
 const cycleBackEl = document.getElementById('js-cycle-back');
+const gameWindowEl = document.querySelector('.window');
 
 const cardWidth = 71;
 const cardHeight = 96;
@@ -252,6 +253,8 @@ function resetGame() {
             el.onmousedown = captureMove(i);
             el.onmouseup = releaseMove;
             el.onclick = handleClick(i);
+            el.ontouchstart = e => { e.preventDefault(); captureMove(i)(e); };
+            el.ontouchend = e => { e.preventDefault(); if (state.moving.capture) { releaseMove(e); } else { handleClick(i)(e); } };
 
             if (facingUp) {
                 faceDown(i);
@@ -334,14 +337,17 @@ function restartDeal() {
 }
 
 function getMousePosition(event) {
-    return {
-        x: event.pageX,
-        y: event.pageY
-    };
+    const e = event.touches && event.touches.length > 0
+        ? event.touches[0]
+        : event.changedTouches && event.changedTouches.length > 0
+            ? event.changedTouches[0]
+            : event;
+    return { x: e.pageX, y: e.pageY };
 }
 
 const handleMove = event => {
     if (state.moving.capture) {
+        if (event.cancelable) event.preventDefault();
         const el = state.moving.element;
         const { x, y } = getMousePosition(event);
 
@@ -443,8 +449,8 @@ const releaseMove = event => {
     clearTimeout(moving);
     clearTimeout(release);
     if (state.moving.capture) {
+        const { x, y } = getMousePosition(event);
         release = setTimeout(() => {
-            const { x, y } = getMousePosition(event);
             requestAnimationFrame(() => {
                 dropCard(x, y);
 
@@ -731,6 +737,15 @@ function initSolitaire() {
     resetEl.onclick = resetGame;
     window.onmousemove = handleMove;
     window.onmouseup = releaseMove;
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.ontouchend = releaseMove;
+
+    const applyScale = () => {
+        const scale = Math.min(1, window.innerWidth / 671);
+        gameWindowEl.style.zoom = scale < 1 ? scale : '';
+    };
+    window.addEventListener('resize', applyScale);
+    applyScale();
 
     resetGame();
 }

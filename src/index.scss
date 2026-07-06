@@ -224,6 +224,7 @@ body {
     cursor: pointer;
     white-space: nowrap;
     outline: 0;
+    touch-action: manipulation;
 
     &:active {
         background-color: #999;
@@ -239,6 +240,7 @@ body {
     white-space: nowrap;
     outline: 0;
     padding-left: 10px;
+    touch-action: manipulation;
 
     &:active {
         background-color: #999;
